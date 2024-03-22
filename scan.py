@@ -6,7 +6,7 @@
 #
 # To use:
 #
-#    python scan.py my-model.mmt   
+#    python scan.py my-model.mmt
 #
 # or
 #
@@ -44,22 +44,24 @@ def scan_model(filename):
     print(f'Checking model {filename}...', end='')
     try:
         model = myokit.load_model(filename)
-    except (myokit.MyokitError):
+    except myokit.SectionNotFoundError:
+        print(' [no model section]')
+    except myokit.MyokitError as e:
         print(' [error when reading model]')
-        return
-    except IOError:
+        print(str(e))
+    except IOError as e:
         print(' [i/o error when reading model]')
-        return
-
-    issues = []
-    for component in model:
-        scan_var_owner(component, issues)
-    if issues:
-        print(' [potential issue detected]')
-        for where, var, expression in issues:
-            print(f'{where} for {var.qname()}: {expression.code()}')
+        print(str(e))
     else:
-        print(' [ok]')
+        issues = []
+        for component in model:
+            scan_var_owner(component, issues)
+        if issues:
+            print(' [potential issue detected]')
+            for where, var, expression in issues:
+                print(f'{where} for {var.qname()}: {expression.code()}')
+        else:
+            print(' [ok]')
 
 
 def scan_dir(path):
