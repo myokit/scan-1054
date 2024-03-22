@@ -4,11 +4,16 @@
 # is a unary plus operation, which are affected by the bug described at
 # https://github.com/myokit/myokit/pull/1055
 #
+# To use:
+#
+#    python scan.py my-model.mmt   
+#
+# or
+#
+#    python scan.py my-directory-with-models
+#
 import os
 import myokit
-
-# Set this to the file or directory you want to check
-path = 'my-model.mmt'
 
 
 def has_issue(expression):
@@ -37,7 +42,14 @@ def scan_var_owner(owner, issues):
 
 def scan_model(filename):
     print(f'Checking model {filename}...', end='')
-    model = myokit.load_model(filename)
+    try:
+        model = myokit.load_model(filename)
+    except (myokit.MyokitError):
+        print(' [error when reading model]')
+        return
+    except IOError:
+        print(' [i/o error when reading model]')
+        return
 
     issues = []
     for component in model:
@@ -62,7 +74,14 @@ def scan_dir(path):
 
 
 if __name__ == '__main__':
+    import sys
+    if len(sys.argv) != 2:
+        print('Usage: ./scan.py path')
+        sys.exit(1)
+    path = sys.argv[1]
+
     if os.path.isdir(path):
         scan_dir(path)
     else:
         scan_model(path)
+

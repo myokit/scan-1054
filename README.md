@@ -6,4 +6,16 @@ See https://github.com/myokit/myokit/pull/1055 for details.
 
 ## Usage
 
-Change the variable `path` to either a model filename or a directory name. Then run.
+To scan a model, run this from the command line:
+
+```
+python scan.py /path/to/a/model.mmt
+```
+
+To scan a directory, use
+
+
+```
+python scan.py /where/i-keep/my-models
+```
+
